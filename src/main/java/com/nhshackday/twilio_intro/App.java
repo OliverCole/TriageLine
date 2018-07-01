@@ -15,20 +15,7 @@ public class App {
         get("/hello", (req, res) -> "Hello Web");
 
         post("/", (request, response) -> {
-            Say say  = new Say.Builder(
-                    "Welcome to the chemotherapy tree-arj line. Are you experiencing any chest pain? Push 1 for yes and 2 for no.")
-            		.voice(Voice.WOMAN)
-                    .build();
-            Gather gather = new Gather.Builder()
-            		.numDigits(1)
-            		.action("/chestpain")
-            		.build();
-            
-            VoiceResponse voiceResponse = new VoiceResponse.Builder()
-                    .say(say)
-                    .gather(gather)
-                    .build();
-            return voiceResponse.toXml();
+            return SayAndRedirect("Welcome to the chemotherapy tree-arj line. Are you experiencing any chest pain? Push 1 for yes and 2 for no.", "/chestpain").toXml();
         });
 
         post("/chestpain", (request, response) -> {
@@ -41,40 +28,11 @@ public class App {
         	{
             	String resp = "Do you have a fever, or a temperature of over 37.5 celsius? " +
 						"Press one for yes and two for no.";
-                Say say  = new Say.Builder(
-                        resp)
-                		.voice(Voice.WOMAN)
-                        .build();
-                
-                Gather gather = new Gather.Builder()
-                		.numDigits(1)
-                		.action("/fever")
-                		.build();
-                
-                VoiceResponse voiceResponse = new VoiceResponse.Builder()
-                        .say(say)
-                        .gather(gather)
-                        .build();
-                return voiceResponse.toXml();
+            	return SayAndRedirect(resp, "/fever").toXml();
         	}
         	else {
-            	String resp = "Unrecognised response.";
-                Say say  = new Say.Builder(
-                        resp)
-                		.voice(Voice.WOMAN)
-                        .build();
-                
-                Redirect redir = new Redirect.Builder("/").build();
-                
-                VoiceResponse voiceResponse = new VoiceResponse.Builder()
-                        .say(say)
-                        .redirect(redir)
-                        .build();
-                return voiceResponse.toXml();
+				return UnrecognisedResponse().toXml();
         	}
-        	
-        	
-        	
 
         });
         
@@ -88,36 +46,10 @@ public class App {
         	{
             	String resp = "Do you have signs of an infection, such as burning when passing urine, " +
 						"coughing up anything or any shivering or shaking? Press one for yes or two for no.";
-                Say say  = new Say.Builder(
-                        resp)
-                		.voice(Voice.WOMAN)
-                        .build();
-
-				Gather gather = new Gather.Builder()
-						.numDigits(1)
-						.action("/signsofinfection")
-						.build();
-                
-                VoiceResponse voiceResponse = new VoiceResponse.Builder()
-                        .say(say)
-                        .gather(gather)
-                        .build();
-                return voiceResponse.toXml();
+				return SayAndRedirect(resp, "/signsofinfection").toXml();
         	}
         	else {
-            	String resp = "Unrecognised response.";
-                Say say  = new Say.Builder(
-                        resp)
-                		.voice(Voice.WOMAN)
-                        .build();
-                
-                Redirect redir = new Redirect.Builder("/").build();
-                
-                VoiceResponse voiceResponse = new VoiceResponse.Builder()
-                        .say(say)
-                        .redirect(redir)
-                        .build();
-                return voiceResponse.toXml();
+				return UnrecognisedResponse().toXml();
         	}
 
         });
@@ -142,4 +74,40 @@ public class App {
         
         return voiceResponse;
     }
+
+    private static VoiceResponse UnrecognisedResponse()
+	{
+		String resp = "Unrecognised response.";
+		Say say  = new Say.Builder(
+				resp)
+				.voice(Voice.WOMAN)
+				.build();
+
+		Redirect redir = new Redirect.Builder("/").build();
+
+		VoiceResponse voiceResponse = new VoiceResponse.Builder()
+				.say(say)
+				.redirect(redir)
+				.build();
+		return voiceResponse;
+	}
+
+	private static VoiceResponse SayAndRedirect(String resp, String redirect)
+	{
+		Say say  = new Say.Builder(
+				resp)
+				.voice(Voice.WOMAN)
+				.build();
+
+		Gather gather = new Gather.Builder()
+				.numDigits(1)
+				.action("/fever")
+				.build();
+
+		VoiceResponse voiceResponse = new VoiceResponse.Builder()
+				.say(say)
+				.gather(gather)
+				.build();
+		return voiceResponse;
+	}
 }
