@@ -91,12 +91,43 @@ public class App {
 		post("/firstfive", (request, response) -> {
 			boolean check = request.queryParams().contains("Digits");
 			if (request.queryParams("Digits").equals("1") ||
-				request.queryParams("Digits").equals("2") ||
-				request.queryParams("Digits").equals("3") ||
-				request.queryParams("Digits").equals("4") ||
-				request.queryParams("Digits").equals("5"))
+					request.queryParams("Digits").equals("2") ||
+					request.queryParams("Digits").equals("3") ||
+					request.queryParams("Digits").equals("4") ||
+					request.queryParams("Digits").equals("5"))
 			{
 				return SpeakProfessional().toXml();
+			}
+			else if (request.queryParams("Digits").equals("6"))
+			{
+				return SecondFive().toXml();
+			}
+			else {
+				return UnrecognisedResponse().toXml();
+			}
+		});
+
+		post("/secondfive", (request, response) -> {
+			boolean check = request.queryParams().contains("Digits");
+			if (request.queryParams("Digits").equals("1"))
+			{
+				return Diarrhoea().toXml();
+			}
+			else if (request.queryParams("Digits").equals("2"))
+			{
+				return SayAndHangup("Ensure you are taking your anti-sickness drugs regularly and are drinking plenty of fluids. Thank you for calling.").toXml();
+			}
+			else if (request.queryParams("Digits").equals("3"))
+			{
+				return SayAndHangup("Increase fluid intake and take a laxative if you've been prescribed one. Thank you for calling.").toXml();
+			}
+			else if (request.queryParams("Digits").equals("4"))
+			{
+				return SayAndHangup("Use mouthwash as directed. Drink plenty of fluids. Use painkillers either as a tablet or a mouthwash. Thank you for calling.").toXml();
+			}
+			else if (request.queryParams("Digits").equals("5"))
+			{
+				return SayAndHangup("Take regular analgesia as prescribed. If this you feel this is insufficient please call for advice. Thank you for calling.").toXml();
 			}
 			else if (request.queryParams("Digits").equals("6"))
 			{
@@ -158,6 +189,21 @@ public class App {
 				String re = voiceResponse.toXml();
 				return re;
 
+		});
+
+		post("/diarrhoea", (request, response) -> {
+			boolean check = request.queryParams().contains("Digits");
+			if (request.queryParams("Digits").equals("1"))
+			{
+				return SpeakProfessional().toXml();
+			}
+			else if (request.queryParams("Digits").equals("2"))
+			{
+				return SayAndHangup("Drink plenty of fluids. If you've previously been advised to take antidiarrhoeal medication please do so.");
+			}
+			else {
+				return UnrecognisedResponse().toXml();
+			}
 		});
     }
 
@@ -239,11 +285,27 @@ public class App {
 		return voiceResponse;
 	}
 
+	private static VoiceResponse Diarrhoea() {
+    	return SayAndRedirect("Have you had more than 6 episodes in the last 24 hours? Press one for yes or two for no.", "/diarrhoea");
+	}
+
 	private static VoiceResponse FirstFive()
 	{
 		String resp = "Do you have any of the following five symptoms? Press one for shortness of breath, " +
-				"two for a rash, three for bleeding, four for mobility problems or numbness, five for urinary " +
+				"two for a rash, three for bleeding, four for mobility problems or numbness, or five for urinary " +
 				"problems. Press six for none of these.";
 		return SayAndRedirect(resp, "/firstfive");
+	}
+
+	private static VoiceResponse SecondFive()
+	{
+		String resp = "Do you have any of the following six symptoms? Press one for diarrhoea, two for nausea or " +
+				"vomiting, three for constipation, four for ulcers or five for pain. Press six for none of these.";
+		return SayAndRedirect(resp, "/secondfive");
+	}
+
+	private static VoiceResponse End()
+	{
+		return null;
 	}
 }
