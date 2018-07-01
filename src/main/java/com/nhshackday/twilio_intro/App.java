@@ -14,10 +14,13 @@ import static spark.Spark.*;
 public class App {
     public static void main(String[] args) {
 
+
+		port(Integer.parseInt(System.getenv("PORT")));
+
         get("/hello", (req, res) -> "Hello Web");
 
         post("/", (request, response) -> {
-            return SayAndRedirect("Welcome to the chemotherapy tree-arj line. Are you experiencing any chest pain? Push 1 for yes and 2 for no.", "/chestpain").toXml();
+            return SayAndRedirect("Welcome to the chemotherapy line. Are you experiencing any chest pain? Push 1 for yes and 2 for no.", "/chestpain").toXml();
         });
 
         post("/chestpain", (request, response) -> {
