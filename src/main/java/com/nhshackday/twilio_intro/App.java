@@ -16,12 +16,12 @@ public class App {
 
         post("/", (request, response) -> {
             Say say  = new Say.Builder(
-                    "Welcome to the chemotherapy triage line. Are you experiencing any chest pain? Push 1 for yes and 2 for no.")
+                    "Welcome to the chemotherapy tree-arj line. Are you experiencing any chest pain? Push 1 for yes and 2 for no.")
             		.voice(Voice.WOMAN)
                     .build();
             Gather gather = new Gather.Builder()
             		.numDigits(1)
-            		.action("/g")
+            		.action("/chestpain")
             		.build();
             
             VoiceResponse voiceResponse = new VoiceResponse.Builder()
@@ -31,7 +31,7 @@ public class App {
             return voiceResponse.toXml();
         });
 
-        post("/g", (request, response) -> {
+        post("/chestpain", (request, response) -> {
         	boolean check = request.queryParams().contains("Digits");
         	if (request.queryParams("Digits").equals("1"))
         	{
@@ -39,15 +39,68 @@ public class App {
         	}
         	else if (request.queryParams("Digits").equals("2"))
         	{
-            	String resp = "Do you have a fever?";
+            	String resp = "Do you have a fever, or a temperature of over 37.5 celsius? " +
+						"Press one for yes and two for no.";
                 Say say  = new Say.Builder(
                         resp)
                 		.voice(Voice.WOMAN)
                         .build();
                 
+                Gather gather = new Gather.Builder()
+                		.numDigits(1)
+                		.action("/fever")
+                		.build();
+                
                 VoiceResponse voiceResponse = new VoiceResponse.Builder()
                         .say(say)
-                        .hangup(new Hangup.Builder().build())
+                        .gather(gather)
+                        .build();
+                return voiceResponse.toXml();
+        	}
+        	else {
+            	String resp = "Unrecognised response.";
+                Say say  = new Say.Builder(
+                        resp)
+                		.voice(Voice.WOMAN)
+                        .build();
+                
+                Redirect redir = new Redirect.Builder("/").build();
+                
+                VoiceResponse voiceResponse = new VoiceResponse.Builder()
+                        .say(say)
+                        .redirect(redir)
+                        .build();
+                return voiceResponse.toXml();
+        	}
+        	
+        	
+        	
+
+        });
+        
+        post("/fever", (request, response) -> {
+        	boolean check = request.queryParams().contains("Digits");
+        	if (request.queryParams("Digits").equals("1"))
+        	{
+        		return GoToANE().toXml();
+        	}
+        	else if (request.queryParams("Digits").equals("2"))
+        	{
+            	String resp = "Do you have signs of an infection, such as burning when passing urine, " +
+						"coughing up anything or any shivering or shaking? Press one for yes or two for no.";
+                Say say  = new Say.Builder(
+                        resp)
+                		.voice(Voice.WOMAN)
+                        .build();
+
+				Gather gather = new Gather.Builder()
+						.numDigits(1)
+						.action("/signsofinfection")
+						.build();
+                
+                VoiceResponse voiceResponse = new VoiceResponse.Builder()
+                        .say(say)
+                        .gather(gather)
                         .build();
                 return voiceResponse.toXml();
         	}
@@ -75,7 +128,8 @@ public class App {
     
     private static VoiceResponse GoToANE()
     {
-    	String resp = "Please go to A and E";
+    	String resp = "If you've had chemotherapy in the last 8 weeks, you could now be at risk of infection. " +
+				"Please go for further assessment at your nearest A and E, or call nine-nine-nine if you are unable to travel.";
         Say say  = new Say.Builder(
                 resp)
         		.voice(Voice.WOMAN)
